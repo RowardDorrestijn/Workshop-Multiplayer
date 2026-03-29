@@ -94,10 +94,11 @@ namespace EasyPeasyFirstPersonController
 
         public override void OnStartClient()
         {
-            if (IsOwner)
+            if (!IsOwner)
             {
                 enabled = false;
-                playerCamera.gameObject.SetActive(false);
+                if (playerCamera != null)
+                    playerCamera.gameObject.SetActive(false);
             }
         }
 
@@ -132,13 +133,25 @@ namespace EasyPeasyFirstPersonController
             {
                 Vector3 localVelocity = transform.InverseTransformDirection(characterController.velocity);
 
-                animator.SetFloat("MoveX", localVelocity.x);
-                animator.SetFloat("MoveY", input.sprint ? localVelocity.z * 2f : localVelocity.z);
+                MoveServerRpc(localVelocity);
             }
 
             currentState.UpdateState();
             HandleRotation();
             UpdateVisuals();
+        }
+
+        [ServerRpc]
+        private void MoveServerRpc(Vector3 localVelocity)
+        {
+            MoveObserversRpc(localVelocity);
+        }
+
+        [ObserversRpc]
+        private void MoveObserversRpc(Vector3 localVelocity)
+        {
+            animator.SetFloat("MoveX", localVelocity.x);
+            animator.SetFloat("MoveY", input.sprint ? localVelocity.z * 2f : localVelocity.z);
         }
 
         private void HandleRotation()

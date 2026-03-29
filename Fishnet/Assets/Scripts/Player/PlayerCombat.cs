@@ -1,7 +1,10 @@
+using FishNet.Object;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerCombat : MonoBehaviour
+using UnityEngine.Networking;
+
+public class PlayerCombat : NetworkBehaviour
 {
     private Animator animator;
     private bool isSlashing;
@@ -19,7 +22,26 @@ public class PlayerCombat : MonoBehaviour
         {
             isSlashing = true;
             animator.SetTrigger("Swing");
+            SwingServerRpc();
         }
+    }
+
+    public override void OnStartClient()
+    {
+        if (!IsOwner)
+            enabled = false;
+    }
+
+    [ObserversRpc]
+    private void SwingObserversRpc()
+    {
+        animator.SetTrigger("Swing");
+    }
+
+    [ServerRpc]
+    private void SwingServerRpc()
+    {
+        SwingObserversRpc();
     }
 
     public void CheckSlash()
