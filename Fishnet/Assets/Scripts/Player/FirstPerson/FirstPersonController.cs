@@ -1,8 +1,9 @@
 namespace EasyPeasyFirstPersonController
 {
     using UnityEngine;
+    using FishNet.Object;
 
-    public partial class FirstPersonController : MonoBehaviour
+    public partial class FirstPersonController : NetworkBehaviour
     {
         [Header("Settings")]
         public float walkSpeed = 3f;
@@ -91,6 +92,15 @@ namespace EasyPeasyFirstPersonController
                 GUILayout.Label("Current State: " + currentState.GetType().Name);
         }
 
+        public override void OnStartClient()
+        {
+            if (IsOwner)
+            {
+                enabled = false;
+                playerCamera.gameObject.SetActive(false);
+            }
+        }
+
         private void Awake()
         {
             cam = playerCamera.GetComponent<Camera>();
@@ -111,6 +121,8 @@ namespace EasyPeasyFirstPersonController
             currentState = states.Grounded();
             currentState.EnterState();
         }
+
+
 
         private void Update()
         {
