@@ -1,4 +1,4 @@
-<img width="1902" height="839" alt="image" src="https://github.com/user-attachments/assets/e9b4f34f-fdbc-4d9c-9ac2-f23d33de96a7" /><h1>Workshop - Multiplayer</h1>
+<h1>Workshop - Multiplayer</h1>
 <p>In this workshop we will discover how to make a game compatible for multiplayer using Fishnet. Fishnet is a library that handles all of the logic for what is needed for multiplayer. Beneath you see the steps to setup Fishnet / Tailscale. Good luck!</p>
 
 <br>
@@ -7,6 +7,7 @@
 
 ### 1. Installing Fishnet
 
+- Clone this repository, add the project to unity and start it.
 - Go to the <a href="https://assetstore.unity.com/packages/tools/network/fishnet-networking-evolved-207815">Asset Store</a> and click on 'Add to My Assets'. 
 - Open in Unity and click on 'import ... to project'. 
 - After downloading, click on import.
@@ -49,15 +50,19 @@
 
 Here we will adjust the existing script so that other players can see you move.
 
-**Step 1:** Go to Scripts > Player > FirstPerson > FirstPersonController.cs
+**Step 1:** Go to Scenes and open the 'Fishnet' scene
+
+You now should see a world with some trees. This game is currently only for single player. You can run around, jump and swing your axe. After hitting a tree 5 times, it will drop a log. You can collect the log by pressing the interact key ('e'). You can also place a house by using the build key ('b'). We want to add multiplayer to this game. 
+
+**Step 2:** Go to Scripts > Player > FirstPerson > FirstPersonController.cs
 
 NetworkBehaviour is an interface available for objects that have the NetworkObject component. This interface provides functions to communicate with other players (observers) or the server. It also provides a check of whether you are the owner or not.
 
-**Step 2:** Change the inheritance from MonoBehaviour to NetworkBehaviour. Make sure to have `using FishNet.Object;` among all the imports. 
+**Step 3:** Change the inheritance from MonoBehaviour to NetworkBehaviour. Make sure to have `using FishNet.Object;` among all the imports. 
 
 As a client you would not want to see and register the camera of other players. If you do not disable the camera's of other players, a lot of errors will occur. We can disable this by checking if you are the owner. If not, disable the camera.
 
-**Step 3:**  Add the following code to the script:
+**Step 4:**  Add the following code to the script:
 
 ```csharp
 public override void OnStartClient()
@@ -70,33 +75,37 @@ public override void OnStartClient()
 }
 ```
 
-**Step 4:** Open the player prefab and add the component "NetworkTransform". You can leave the default settings. This component updates the position of the object to other players.
+**Step 5:** Open the player prefab and add the component "NetworkTransform". You can leave the default settings. This component updates the position of the object to other players.
 
 You should now be able to see each other moving. It is normal to not see each others animations, as we will do this part next.
 
-## Player Combat
+## Animations
+
+We will now make sure that the animation variables are updated to everyone, and not only you.
+
+**Step 1:** Open the player prefab and add the component "NetworkAnimator". You can leave the default settings. This component does **not** replace the "Animator" component. It only handles the synchronisation of the variables.
+
+## Axe swinging
+
 **Step 1:** Go to Scripts > Player > FirstPerson > PlayerCombat.cs
-**Step 2:** Use NetworkBehaviour instead of MonoBehaviour and import `using FishNet.Object;` on the top of the script.
+
+**Step 2:** Change the inheritance from MonoBehaviour to NetworkBehaviour.
+
 **Step 3:** Add the following code to the script
+
 ```csharp
 public override void OnStartClient()
 {
 	if (!IsOwner)
 		enabled = false;
 }
-
-[ObserversRpc]
-private void SwingObserversRpc()
-{
-	animator.SetTrigger("Swing");
-}
-
-[ServerRpc]
-private void SwingServerRpc()
-{
-	SwingObserversRpc();
-}
 ```
 
-Step 4: add `SwingServerRpc()` to the update function underneath `animator.SetTrigger("Swing")`.
+This code will make sure that when you swing your axe, other players don't swing their axe as well.
+
+## Tree cutting
+
+After hitting a tree 5 times, it drops a branch. This should also be 
+
+## Building placement
 
