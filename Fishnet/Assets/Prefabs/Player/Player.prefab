@@ -159,6 +159,7 @@ GameObject:
   - component: {fileID: 7291117012844555643}
   - component: {fileID: 7323507482984809955}
   - component: {fileID: 1418070469630169905}
+  - component: {fileID: 6851244277083760}
   m_Layer: 2
   m_Name: Player
   m_TagString: Untagged
@@ -351,6 +352,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f4fdda2adb7434b8194d0286c82975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2369511446011875499}
+  _networkObjectCache: {fileID: 0}
 --- !u!114 &904476911430259546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -523,6 +527,28 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
+--- !u!114 &6851244277083760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2471092708325639544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FishNet.Runtime::FishNet.Component.Animating.NetworkAnimator
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2369511446011875499}
+  _networkObjectCache: {fileID: 0}
+  IgnoredParameters: []
+  _animator: {fileID: 214593855586009479}
+  _synchronizeWhenDisabled: 0
+  _smoothFloats: 1
+  _interpolation: 2
+  _clientAuthoritative: 1
+  _sendToOwner: 0
 --- !u!1 &4078141387095630901
 GameObject:
   m_ObjectHideFlags: 0

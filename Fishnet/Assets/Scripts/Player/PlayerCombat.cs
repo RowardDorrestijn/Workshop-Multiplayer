@@ -1,3 +1,4 @@
+using FishNet.Component.Animating;
 using FishNet.Object;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,13 +7,13 @@ using UnityEngine.Networking;
 
 public class PlayerCombat : NetworkBehaviour
 {
-    private Animator animator;
+    private NetworkAnimator animator;
     private bool isSlashing;
     private PlayerLooker playerLooker;
 
     void Awake()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponent<NetworkAnimator>();
         playerLooker = GetComponent<PlayerLooker>();
     }
 
@@ -22,7 +23,6 @@ public class PlayerCombat : NetworkBehaviour
         {
             isSlashing = true;
             animator.SetTrigger("Swing");
-            SwingServerRpc();
         }
     }
 
@@ -30,18 +30,6 @@ public class PlayerCombat : NetworkBehaviour
     {
         if (!IsOwner)
             enabled = false;
-    }
-
-    [ObserversRpc]
-    private void SwingObserversRpc()
-    {
-        animator.SetTrigger("Swing");
-    }
-
-    [ServerRpc]
-    private void SwingServerRpc()
-    {
-        SwingObserversRpc();
     }
 
     public void CheckSlash()

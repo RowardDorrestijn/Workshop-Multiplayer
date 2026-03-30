@@ -1,7 +1,9 @@
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using System.Collections;
 using UnityEngine;
 
-public class TreeController : MonoBehaviour
+public class TreeController : NetworkBehaviour
 {
     [Header("Shake Settings")]
     public float shakeDuration = 0.2f;
@@ -11,24 +13,29 @@ public class TreeController : MonoBehaviour
 
     private Vector3 originalPos;
     private bool isShaking = false;
-    private int currentAmountOfHitsNeededForBranch;
+
+    private readonly SyncVar<int> currentAmountOfHitsNeededForBranch = new SyncVar<int>();
 
     void Awake()
     {
         originalPos = transform.localPosition;
-        currentAmountOfHitsNeededForBranch = amountOfHitsNeededForBranch;
+    }
+
+    public override void OnStartServer()
+    {
+        currentAmountOfHitsNeededForBranch.Value = amountOfHitsNeededForBranch;
     }
 
     public void Hit(Transform playerTransform)
     {
         if (!isShaking)
         {
-            amountOfHitsNeededForBranch--;
+            currentAmountOfHitsNeededForBranch.Value--;
 
-            if (amountOfHitsNeededForBranch <= 0)
+            if (currentAmountOfHitsNeededForBranch.Value <= 0)
             {
                 DropBranch(playerTransform);
-                currentAmountOfHitsNeededForBranch = amountOfHitsNeededForBranch;
+                currentAmountOfHitsNeededForBranch.Value = amountOfHitsNeededForBranch;
             }
 
             StartCoroutine(Shake());
