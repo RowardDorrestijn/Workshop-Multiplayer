@@ -20,30 +20,23 @@
 
 
 ## Tailscale
+### Logging into the account
 
-### 1. Create an account
-
-- Go to tailscale.com and login using one of the options provided.
-- Fill in the form (does not matter what you say)
-- Go to the next step
+- Go to tailscale.com and login using the google account that has been provided.
 - Click on the download button and install Tailscale
+- Make sure you are logged into Tailscale on the app
+- Only one person has to find their peer in the list of IP addresses, their laptop name will be the best way to find their IP. (make sure you both are using the same IP address)
+- Go to fishnet and open up the NetworkManager
+- Find the Tugboat section of the NetworkManager and Change your client address fron "localhost" to the IP address.
 
-### 2. Host
 
-- Click on 'Skip this introduction' at the bottom of the page
-- Go to the 'Users' tab and click on 'Invite users' outside of my organisation:
-<img width="1167" height="365" alt="image" src="https://github.com/user-attachments/assets/8ce485cc-5550-411d-9e31-49bb9b1afa7c" />
+### Troubleshooting
+Unable to find the laptop name?
+- Open up CMD (Command Prompt)
+- Enter "hostname"
+- That is your laptop name
 
-- Copy the link and send it to your working partner
 
-### 3. Client
-
-- Click on the link
-- Login using the account you just created
-- It should give you the option to join your partners network, click on that one
-- Open a command line
-- Execute 'tailscale status'
-- Check if you see both you and your partners machine
 
 
 ## Player Movement
