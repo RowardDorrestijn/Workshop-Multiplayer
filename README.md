@@ -27,8 +27,10 @@
 - Click on the download button and install Tailscale
 - Make sure you are logged into Tailscale on the app
 - Only one person has to find their peer in the list of IP addresses, their laptop name will be the best way to find their IP. (make sure you both are using the same IP address)
-- Go to fishnet and open up the NetworkManager
-- Find the Tugboat section of the NetworkManager and Change your client address fron "localhost" to the IP address.
+- Go back to Unity and open up the NetworkManager
+- Add a Tugboat component
+- In the Tugboat component, change your client address from "localhost" to the IP address.
+- If you are **not** the host, also fill in this IP address in the Ipv 4 Bind Address.
 <img width="468" height="456" alt="image" src="https://github.com/user-attachments/assets/c4b73a87-e33b-4829-b37a-a1282f3f6076" />
 
 
@@ -39,7 +41,25 @@ Unable to find the laptop name?
 - That is your laptop name
 
 
+## Player Spawning
 
+The first thing we want to do in this workshop is players to be able to spawn.
+
+**Step 1:** Create two empty's that act as spawnpoint. Place them anywhere in your world, but on a logic place.
+
+**Step 2:** Open the NetworkManager and look for the PlayerSpawner component. Under 'Spawns' add two spawns and drag the spawnpoints into the slots.
+
+**Step 3:** Open the Player prefab. You can find this prefab at Prefabs > Player. Add a NetworkObject component.
+
+This component makes it able for objects to interact with multiplayer.
+
+**Step 4:** Open the NetworkManager. Add the Player prefab to the slot inside the PlayerSpawner component.
+
+<img width="1724" height="540" alt="image" src="https://github.com/user-attachments/assets/02b6c944-1e8f-40fa-8e87-21f0c709cb8b" />
+
+**Step 5:** Remove the player from the scene.
+
+Test the game together. You should now be able to host and join a game and see each other.
 
 ## Player Movement
 
@@ -70,13 +90,15 @@ public override void OnStartClient()
 
 **Step 4:** Open the Player prefab and add the component "NetworkTransform". You can leave the default settings. This component updates the position of the object to other players.
 
-You should now be able to see each other moving. It is normal to not see each others animations, as we will do this part next.
+Test the game together. You should now be able to see each other moving. It is normal to not see each others animations, as we will do this part next.
 
 ## Animations
 
 We will now make sure that the animation variables are updated to everyone, and not only you.
 
 **Step 1:** Open the Player prefab and add the component "NetworkAnimator". You can leave the default settings. This component does **not** replace the "Animator" component. It only handles the synchronisation of the variables.
+
+Test the game together. You should now be able to see each others animations.
 
 ## Axe swinging
 
@@ -91,6 +113,8 @@ if (!IsOwner) return;
 ```
 
 This line will make sure that when you execute this function, it won't be executed on other clients as well.
+
+Test the game together. You should now be able to see each other swinging their axe.
 
 ## Tree cutting
 
@@ -171,11 +195,11 @@ These OnChange functions will execute on every client, every time a syncvar chan
 
 **Step 9:** Go to Prefabs > Nature and open the prefab Branch_01. Add a NetworkObject component. **Is Spawnable** must be turned on.
 
-Now you are able to see someone else hitting a tree (shaking) and after 5 hits you will both see a branch spawning. You can pick up a branch by looking at it and pressing 'e'.
+Test the game together. You should now be able to see someone else hitting a tree (shaking) and after 5 hits you will both see a branch spawning. You can pick up a branch by looking at it and pressing 'e'.
 
 ## Building placement
 
-By pressing 'b' you are able to place a building. When the ground is good enough for building a house, the preview will turn green. If there are obstacles hindering the placement, it will turn red. By clicking with your mouse, you can place the building. We want this building to be visible to all other players.
+By pressing 'b' you are able to place a building. When the ground is good enough for building a house, the preview will turn green. If there are obstacles hindering the placement, it will turn red. By clicking with your mouse, you can place the building. You can rotate the building by scrolling. We want this building to be visible to all other players.
 
 **Step 1:** Go to Prefabs > Buildings and open the House_01_LITE prefab. Add a NetworkObject component. **Is Spawnable** must be turned on.
 
@@ -211,6 +235,7 @@ private void PlaceBuildingServerRpc(Vector3 position, Quaternion rotation)
 
 PlaceBuildingServerRpc() is now executed on the server. Here we can spawn the house so that it is visible for everyone. ToggleBuildMode() is a function that you want to execute on your own client. Therefore it stays in PlaceBuilding().
 
+Test the game together. You should now be able to see each other placing a building.
 
 ## Interactables
 
@@ -266,5 +291,7 @@ There is a problem with this solution however. You can spot this mistake by doin
 - Let the other one join
 
 You will now see that on the host the door is open and on the client the door is closed. This is the difference between SyncVar<> and [ObserversRpc]. SyncVar<> synchronizes and stores the value, also for late joiners. [ObserverRpc] only executes the code for the clients that are currently online. Use [ObserverRpc] for temporary effects (like firework, particles etc.). Use SyncVar<> for states that can be permanent (like the amounts needed to hit the tree).
+
+Test the game together. You should now be able to see other players open a door and picking up branches.
 
 ## The end
