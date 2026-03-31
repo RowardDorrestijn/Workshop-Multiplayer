@@ -7,7 +7,8 @@
 
 ### 1. Installing Fishnet
 
-- Clone this repository, add the project to unity and start it.
+- Clone this repository, add the project to unity and start it. If you do not have the same version, use one you already have installed.
+- Go to Scenes and open the Fishnet scene.
 - Go to the <a href="https://assetstore.unity.com/packages/tools/network/fishnet-networking-evolved-207815">Asset Store</a> and click on 'Add to My Assets'. 
 - Open in Unity and click on 'import ... to project'. 
 - After downloading, click on import.
@@ -44,19 +45,17 @@ Unable to find the laptop name?
 
 Here we will adjust the existing script so that other players can see you move.
 
-**Step 1:** Go to Scenes and open the 'Fishnet' scene
+You now should see a world with some trees. This game is currently only for single player. You can run around, jump and swing your axe. After hitting a tree 5 times, it will drop a log. You can collect the log by pressing the interact key ('e'). You can also place a house by using the build key ('b'). We want to add multiplayer to this game.
 
-You now should see a world with some trees. This game is currently only for single player. You can run around, jump and swing your axe. After hitting a tree 5 times, it will drop a log. You can collect the log by pressing the interact key ('e'). You can also place a house by using the build key ('b'). We want to add multiplayer to this game. 
-
-**Step 2:** Go to Scripts > Player > FirstPerson > FirstPersonController.cs
+**Step 1:** Go to Scripts > Player > FirstPerson > FirstPersonController.cs
 
 NetworkBehaviour is an interface available for objects that have the NetworkObject component. This interface provides functions to communicate with other players (observers) or the server. It also provides a check of whether you are the owner or not.
 
-**Step 3:** Change the inheritance from MonoBehaviour to NetworkBehaviour. Make sure to have `using FishNet.Object;` among all the imports. 
+**Step 2:** Change the inheritance from MonoBehaviour to NetworkBehaviour. Make sure to have `using FishNet.Object;` among all the imports. 
 
 As a client you would not want to see and register the camera of other players. If you do not disable the camera's of other players, a lot of errors will occur. We can disable this by checking if you are the owner. If not, disable the camera.
 
-**Step 4:**  Add the following code to the script:
+**Step 3:**  Add the following code to the script:
 
 ```csharp
 public override void OnStartClient()
@@ -69,7 +68,7 @@ public override void OnStartClient()
 }
 ```
 
-**Step 5:** Open the Player prefab and add the component "NetworkTransform". You can leave the default settings. This component updates the position of the object to other players.
+**Step 4:** Open the Player prefab and add the component "NetworkTransform". You can leave the default settings. This component updates the position of the object to other players.
 
 You should now be able to see each other moving. It is normal to not see each others animations, as we will do this part next.
 
@@ -215,3 +214,57 @@ PlaceBuildingServerRpc() is now executed on the server. Here we can spawn the ho
 
 ## Interactables
 
+Interactables are objects that highlight when you look at them. In this game we have two: branches and doors. When picking up a branch, you want it to be deleted for everyone. When opening a door you want it to be open for everyone.
+
+**Step 1:** Go to Scripts > Interactables and open InteractableObject.cs. Change the inheritance from MonoBehaviour to NetworkBehaviour.
+
+When you look at an interactable object, it gets highlighted. Since this is client side only, we don't need to change anything else to this script.
+
+**Step 2:** Go to Scripts > Player and open PlayerInteraction.cs. Again replace the inheritance from MonoBehaviour to NetworkBehaviour.
+
+**Step 3:** Replace the first if-statement with the following line:
+
+```csharp
+if (IsOwner && looker.TryGetLookedAt(out RaycastHit hit))
+``` 
+
+This line prevents the same thing as with slashing your axe. Now if someone presses 'e', it does not execute this code on every client.
+
+**Step 4:** Go to Scripts > Interactables > Trees and open BranchController.cs. Add the following line one line above ```Destroy(gameobject)```:
+
+```csharp
+Despawn(gameObject);
+```
+
+Despawning an object updates for every client. It is as simple as this.
+
+**Step 5:** Go to Scripts > Interactables > Doors and open DoorController.cs. Replace Interact() with:
+
+```csharp
+[ServerRpc(RequireOwnership = false)]
+public override void Interact(GameObject player)
+{
+    if (!isMoving)
+    {
+        InteractObserversRpc();
+    }
+}
+
+[ObserversRpc]
+private void InteractObserversRpc()
+{
+    StartCoroutine(RotateDoor());
+}
+```
+
+Again we used ```[ServerRpc(RequireOwnership = false)]```. The door is not owned by the player, but by the server. That is why ```RequireOwnership = false```. Now Interact() is a function that is handled on the server. Instead of a SyncVar<>, we use [ObserversRpc]. This is a different way to execute code on all clients. In RotateDoor the boolean 'isOpen' gets updated, therefore the variable gets updated on every client.
+
+There is a problem with this solution however. You can spot this mistake by doing the following steps:
+
+- Let the host start the game
+- Place a building and open the door
+- Let the other one join
+
+You will now see that on the host the door is open and on the client the door is closed. This is the difference between SyncVar<> and [ObserversRpc]. SyncVar<> synchronizes and stores the value, also for late joiners. [ObserverRpc] only executes the code for the clients that are currently online. Use [ObserverRpc] for temporary effects (like firework, particles etc.). Use SyncVar<> for states that can be permanent (like the amounts needed to hit the tree).
+
+## The end
