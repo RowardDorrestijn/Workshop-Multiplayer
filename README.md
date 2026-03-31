@@ -69,7 +69,7 @@ public override void OnStartClient()
 }
 ```
 
-**Step 5:** Open the player prefab and add the component "NetworkTransform". You can leave the default settings. This component updates the position of the object to other players.
+**Step 5:** Open the Player prefab and add the component "NetworkTransform". You can leave the default settings. This component updates the position of the object to other players.
 
 You should now be able to see each other moving. It is normal to not see each others animations, as we will do this part next.
 
@@ -77,7 +77,7 @@ You should now be able to see each other moving. It is normal to not see each ot
 
 We will now make sure that the animation variables are updated to everyone, and not only you.
 
-**Step 1:** Open the player prefab and add the component "NetworkAnimator". You can leave the default settings. This component does **not** replace the "Animator" component. It only handles the synchronisation of the variables.
+**Step 1:** Open the Player prefab and add the component "NetworkAnimator". You can leave the default settings. This component does **not** replace the "Animator" component. It only handles the synchronisation of the variables.
 
 ## Axe swinging
 
@@ -172,10 +172,45 @@ These OnChange functions will execute on every client, every time a syncvar chan
 
 **Step 9:** Go to Prefabs > Nature and open the prefab Branch_01. Add a NetworkObject component. **Is Spawnable** must be turned on.
 
-Now you are able to see someone else hitting a tree (shaking) and after 5 hits you will both see a branch spawning. 
+Now you are able to see someone else hitting a tree (shaking) and after 5 hits you will both see a branch spawning. You can pick up a branch by looking at it and pressing 'e'.
 
 ## Building placement
 
+By pressing 'b' you are able to place a building. When the ground is good enough for building a house, the preview will turn green. If there are obstacles hindering the placement, it will turn red. By clicking with your mouse, you can place the building. We want this building to be visible to all other players.
+
+**Step 1:** Go to Prefabs > Buildings and open the House_01_LITE prefab. Add a NetworkObject component. **Is Spawnable** must be turned on.
+
+**Step 2:** Go to Scripts > Player and open PlaceBuildingManager.cs. Change the inheritance from MonoBehaviour to NetworkBehaviour.
+
+You do not want to see what the preview of other players when they are placing a building.
+
+**Step 3:** Put the following line at the top of the Update() function:
+
+```csharp
+if(!IsOwner) return;
+```
+
+**Step 4:** Scroll down until you see PlaceBuilding(). Replace this function with the following two functions:
+
+```csharp
+void PlaceBuilding()
+{
+    if (isBuildingMode && canPlace)
+    {
+        PlaceBuildingServerRpc(currentGhost.transform.position, currentGhost.transform.rotation);
+        ToggleBuildMode();
+    }
+}
+
+[ServerRpc]
+private void PlaceBuildingServerRpc(Vector3 position, Quaternion rotation)
+{
+    GameObject house = Instantiate(buildingPrefab, position, rotation);
+    Spawn(house);
+}
+```
+
+PlaceBuildingServerRpc() is now executed on the server. Here we can spawn the house so that it is visible for everyone. ToggleBuildMode() is a function that you want to execute on your own client. Therefore it stays in PlaceBuilding().
 
 
 ## Interactables
