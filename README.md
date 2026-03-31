@@ -28,6 +28,7 @@
 - Only one person has to find their peer in the list of IP addresses, their laptop name will be the best way to find their IP. (make sure you both are using the same IP address)
 - Go to fishnet and open up the NetworkManager
 - Find the Tugboat section of the NetworkManager and Change your client address fron "localhost" to the IP address.
+<img width="468" height="456" alt="image" src="https://github.com/user-attachments/assets/c4b73a87-e33b-4829-b37a-a1282f3f6076" />
 
 
 ### Troubleshooting
