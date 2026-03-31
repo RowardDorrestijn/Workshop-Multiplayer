@@ -295,3 +295,5 @@ You will now see that on the host the door is open and on the client the door is
 Test the game together. You should now be able to see other players open a door and picking up branches.
 
 ## The end
+
+**If there is still time left. Try to fix the last problem. Good luck!**
