@@ -26,14 +26,10 @@ public class PlayerCombat : NetworkBehaviour
         }
     }
 
-    public override void OnStartClient()
-    {
-        if (!IsOwner)
-            enabled = false;
-    }
-
     public void CheckSlash()
     {
+        if (!IsOwner) return;
+
         if (playerLooker.TryGetLookedAt(out RaycastHit hit))
         {
             if (hit.transform.TryGetComponent<TreeController>(out TreeController tree))

@@ -7,6 +7,7 @@ public class BranchController : InteractableObject
     {
         InventoryManager inventoryManager = player.GetComponent<InventoryManager>();
         inventoryManager.AddBranch(1);
+        Despawn(gameObject);
         Destroy(gameObject);
     }
 }

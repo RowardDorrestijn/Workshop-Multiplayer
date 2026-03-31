@@ -1,13 +1,14 @@
+using FishNet.Object;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInteraction : MonoBehaviour
+public class PlayerInteraction : NetworkBehaviour
 {
     private PlayerLooker looker;
 
     void Update()
     {
-        if (looker.TryGetLookedAt(out RaycastHit hit))
+        if (IsOwner && looker.TryGetLookedAt(out RaycastHit hit))
         {
             if (Keyboard.current.eKey.wasPressedThisFrame)
             {

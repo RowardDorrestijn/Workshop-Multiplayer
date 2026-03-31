@@ -1,7 +1,8 @@
+using FishNet.Object;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InteractableObject : MonoBehaviour, IInteractable
+public class InteractableObject : NetworkBehaviour, IInteractable
 {
     private Outline outline;
     private bool isLookedAt;

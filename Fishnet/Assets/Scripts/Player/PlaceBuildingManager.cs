@@ -1,8 +1,9 @@
+using FishNet.Object;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlaceBuildingManager : MonoBehaviour
+public class PlaceBuildingManager : NetworkBehaviour
 {
     [Header("Settings")]
     public GameObject buildingPrefab;
@@ -40,6 +41,8 @@ public class PlaceBuildingManager : MonoBehaviour
 
     void Update()
     {
+        if(!IsOwner) return;
+
         if (Keyboard.current.bKey.wasPressedThisFrame) ToggleBuildMode();
 
         if (isBuildingMode && currentGhost != null)
@@ -114,9 +117,16 @@ public class PlaceBuildingManager : MonoBehaviour
     {
         if (isBuildingMode && canPlace)
         {
-            Instantiate(buildingPrefab, currentGhost.transform.position, currentGhost.transform.rotation);
+            PlaceBuildingServerRpc(currentGhost.transform.position, currentGhost.transform.rotation);
             ToggleBuildMode();
         }
+    }
+
+    [ServerRpc]
+    private void PlaceBuildingServerRpc(Vector3 position, Quaternion rotation)
+    {
+        GameObject house = Instantiate(buildingPrefab, position, rotation);
+        Spawn(house);
     }
 
     private void OnDrawGizmos()

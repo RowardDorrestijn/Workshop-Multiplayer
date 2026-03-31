@@ -175,6 +175,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19c3de8c791116846ae4ed9611685daa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BranchController
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 7081639603460179451}
+  _networkObjectCache: {fileID: 7081639603460179451}
 --- !u!114 &7081639603460179451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,6 +197,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
   NetworkBehaviours:
+  - {fileID: 3665066758078946001}
   - {fileID: -1303589546157701489}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
@@ -205,7 +209,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584266589540139192
+  _initializedTimestamp: -8584266295892439920
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -221,7 +225,7 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 3
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 5245584376560895192
   SceneId: 0
@@ -242,6 +246,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a6a39c46bf52104ba8efe3100bce3f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FishNet.Runtime::FishNet.Object.EmptyNetworkBehaviour
-  _componentIndexCache: 0
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7081639603460179451}
   _networkObjectCache: {fileID: 7081639603460179451}

@@ -35,7 +35,6 @@ public class TreeController : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void Hit(Transform playerTransform)
     {
-        Debug.Log("Tree hit on server");
         if (!isShaking)
         {
             currentAmountOfHitsNeededForBranch.Value--;

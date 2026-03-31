@@ -1,3 +1,4 @@
+using FishNet.Object;
 using System.Collections;
 using UnityEngine;
 
@@ -18,12 +19,19 @@ public class DoorController : InteractableObject
         openRotation = Quaternion.Euler(transform.eulerAngles + new Vector3(0, openAngle, 0));
     }
 
+    [ServerRpc(RequireOwnership = false)]
     public override void Interact(GameObject player)
     {
         if (!isMoving)
         {
-            StartCoroutine(RotateDoor());
+            InteractObserversRpc();
         }
+    }
+
+    [ObserversRpc]
+    private void InteractObserversRpc()
+    {
+        StartCoroutine(RotateDoor());
     }
 
     private IEnumerator RotateDoor()
