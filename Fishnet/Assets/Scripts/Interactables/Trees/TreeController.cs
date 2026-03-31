@@ -19,15 +19,23 @@ public class TreeController : NetworkBehaviour
     void Awake()
     {
         originalPos = transform.localPosition;
-    }
+        currentAmountOfHitsNeededForBranch.OnChange += OnHitsChanged;
+    }   
 
     public override void OnStartServer()
     {
         currentAmountOfHitsNeededForBranch.Value = amountOfHitsNeededForBranch;
     }
 
+    private void OnHitsChanged(int prev, int next, bool asServer)
+    {
+        StartCoroutine(Shake());
+    }
+
+    [ServerRpc(RequireOwnership = false)]
     public void Hit(Transform playerTransform)
     {
+        Debug.Log("Tree hit on server");
         if (!isShaking)
         {
             currentAmountOfHitsNeededForBranch.Value--;
@@ -37,8 +45,6 @@ public class TreeController : NetworkBehaviour
                 DropBranch(playerTransform);
                 currentAmountOfHitsNeededForBranch.Value = amountOfHitsNeededForBranch;
             }
-
-            StartCoroutine(Shake());
         }
     }
 
@@ -56,6 +62,8 @@ public class TreeController : NetworkBehaviour
         {
             rb.AddForce(dropDirection * 2f + Vector3.up * 2f, ForceMode.Impulse);
         }
+
+        Spawn(branch);
     }
 
     private IEnumerator Shake()
