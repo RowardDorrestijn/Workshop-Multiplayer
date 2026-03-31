@@ -85,21 +85,98 @@ We will now make sure that the animation variables are updated to everyone, and 
 
 **Step 2:** Change the inheritance from MonoBehaviour to NetworkBehaviour.
 
-**Step 3:** Add the following code to the script
+**Step 3:** Put the following line at the top of CheckSlash()
 
 ```csharp
-public override void OnStartClient()
-{
-	if (!IsOwner)
-		enabled = false;
-}
+if (!IsOwner) return;
 ```
 
-This code will make sure that when you swing your axe, other players don't swing their axe as well.
+This line will make sure that when you execute this function, it won't be executed on other clients as well.
 
 ## Tree cutting
 
-After hitting a tree 5 times, it drops a branch. This should also be 
+In this game, you can get wood by cutting trees. After hitting a tree 5 times, it drops a branch. We will now learn how to synchronize variables so that you can see someone else cutting a tree.
+
+**Step 1:** Go to Prefabs > Nature > Tree_(0-5) and for each of these trees add a NetworkObject component. Disable **Is Spawnable**.
+
+**Step 2:** Go to Scripts > Interactables and open TreeController.cs. There, change the inheritance from MonoBehaviour to NetworkBehaviour.
+
+**Step 3:** Replace this line:
+
+```csharp
+private int currentAmountOfHitsNeededForBranch;
+```
+
+with
+
+```csharp
+private readonly SyncVar<int> currentAmountOfHitsNeededForBranch = new SyncVar<int>();
+```
+
+**Step 4:** Remove this line from Awake():
+
+```csharp
+currentAmountOfHitsNeededForBranch = amountOfHitsNeededForBranch;
+```
+
+Problem now is that we can't directly assign values to currentAmountOfHitsNeededForBranch.
+
+**Step 5:** Add this function to the code:
+
+```csharp
+public override void OnStartServer()
+{
+    currentAmountOfHitsNeededForBranch.Value = amountOfHitsNeededForBranch;
+}
+```
+
+**Step 6:** Replace the Hit() function with this:
+
+```csharp
+[ServerRpc(RequireOwnership = false)]
+public void Hit(Transform playerTransform)
+{
+    if (!isShaking)
+    {
+        currentAmountOfHitsNeededForBranch.Value--;
+
+        if (currentAmountOfHitsNeededForBranch.Value <= 0)
+        {
+            DropBranch(playerTransform);
+            currentAmountOfHitsNeededForBranch.Value = amountOfHitsNeededForBranch;
+        }
+    }
+}
+```
+
+By adding ```[ServerRpc]``` to a function you, as a client, can call this function to run on the server. All objects placed in the editor in the scene are owned by the server. By adding ```(RequireOwnership = false)```, we can hit the tree without owning it. If you do not add this line, you are not able to hit the tree.
+
+Notice how we deleted ```StartCoroutine(Shake());```. We did this because shaking should be visible to everyone. This function now is handled on the server side. 
+
+**Step 7:** Add the following function:
+
+```csharp
+private void OnHitsChanged(int prev, int next, bool asServer)
+{
+    StartCoroutine(Shake());
+}
+```
+
+**Step 8:** Add the following line to Awake():
+
+```csharp
+currentAmountOfHitsNeededForBranch.OnChange += OnHitsChanged;
+```
+
+These OnChange functions will execute on every client, every time a syncvar changes. Do not forget to add the parameters ```(int prev, int next, bool asServer)``` to the OnChange function.
+
+**Step 9:** Go to Prefabs > Nature and open the prefab Branch_01. Add a NetworkObject component. **Is Spawnable** must be turned on.
+
+Now you are able to see someone else hitting a tree (shaking) and after 5 hits you will both see a branch spawning. 
 
 ## Building placement
+
+
+
+## Interactables
 
