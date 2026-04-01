@@ -61,11 +61,11 @@ This component makes it able for objects to interact with multiplayer.
 
 Test the game together. You should now be able to host and join a game and see each other.
 
+You should now see a world with some trees. This game is currently only for single player. You can run around, jump and swing your axe. After hitting a tree 5 times, it will drop a log. You can collect the log by pressing the interact key ('e'). You can also place a house by using the build key ('b'). We want to add multiplayer to this game.
+
 ## Player Movement
 
 Here we will adjust the existing script so that other players can see you move.
-
-You now should see a world with some trees. This game is currently only for single player. You can run around, jump and swing your axe. After hitting a tree 5 times, it will drop a log. You can collect the log by pressing the interact key ('e'). You can also place a house by using the build key ('b'). We want to add multiplayer to this game.
 
 **Step 1:** Go to Scripts > Player > FirstPerson > FirstPersonController.cs
 
